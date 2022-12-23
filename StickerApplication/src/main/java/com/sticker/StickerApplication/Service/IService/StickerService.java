@@ -1,5 +1,6 @@
 package com.sticker.StickerApplication.Service.IService;
 
+import com.sticker.StickerApplication.Entity.Request.StickerRequest;
 import com.sticker.StickerApplication.Entity.Sticker;
 import org.springframework.http.ResponseEntity;
 
@@ -12,7 +13,7 @@ public interface StickerService {
 
     ResponseEntity<List<Sticker>> getAll();
 
-    ResponseEntity<?> addSticker(Long packageId, Sticker sticker);
+    ResponseEntity<?> addSticker(Long packageId, StickerRequest sticker);
 
     ResponseEntity<?> updateSticker(Long packageId, Sticker sticker, Long stickerId);
 
@@ -21,4 +22,5 @@ public interface StickerService {
     ResponseEntity<List<Sticker>> getAllByPackageId(Long packageId);
 
 
+    ResponseEntity<?> addStickerToPackage(Long packageId, Long stickerId);
 }

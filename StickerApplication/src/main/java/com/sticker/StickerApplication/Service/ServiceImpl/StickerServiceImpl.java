@@ -1,9 +1,14 @@
 package com.sticker.StickerApplication.Service.ServiceImpl;
 
 import com.sticker.StickerApplication.Entity.Friend;
+import com.sticker.StickerApplication.Entity.Request.StickerRequest;
 import com.sticker.StickerApplication.Entity.Sticker;
+import com.sticker.StickerApplication.Entity.StickerPackage;
+import com.sticker.StickerApplication.Entity.Users;
 import com.sticker.StickerApplication.Repository.FriendRepository;
+import com.sticker.StickerApplication.Repository.StickerPackageRepository;
 import com.sticker.StickerApplication.Repository.StickerRepository;
+import com.sticker.StickerApplication.Repository.UserRepository;
 import com.sticker.StickerApplication.Service.IService.StickerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +25,8 @@ public class StickerServiceImpl implements StickerService {
 
     private final StickerRepository stickerRepository;
     private final FriendRepository friendRepository;
+    private final StickerPackageRepository stickerPackageRepository;
+    private final UserRepository userRepository;
 
     @Override
     public ResponseEntity<List<Sticker>> getStickers(Long userId) {
@@ -27,9 +34,18 @@ public class StickerServiceImpl implements StickerService {
         return new ResponseEntity<>(stickerRepository.findAllByUserIdIn(fuserId), HttpStatus.OK);
     }
     @Override
-    public ResponseEntity<?> addSticker(Long packageId, Sticker sticker) {
-        sticker.setStickerPackageId(packageId);
-        return new ResponseEntity<>(stickerRepository.save(sticker),HttpStatus.OK);
+    public ResponseEntity<?> addSticker(Long packageId, StickerRequest sticker) {
+        Sticker existSticker = new Sticker();
+        existSticker.setStickerPackageId(packageId);
+        existSticker.setStickerName(sticker.getStickerName());
+        existSticker.setEnabled(true);
+        existSticker.setImageUrl(sticker.getImageUrl());
+        StickerPackage willAddPackage = stickerPackageRepository.getById(packageId);
+        existSticker.setUserId(willAddPackage.getUserId());
+        Users user = userRepository.getById(willAddPackage.getUserId());
+        existSticker.setUserName(user.getNickName());
+        stickerRepository.save(existSticker);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override
@@ -54,6 +70,22 @@ public class StickerServiceImpl implements StickerService {
     public ResponseEntity<List<Sticker>> getAllByPackageId(Long packageId) {
         List<Sticker> stickers = stickerRepository.getAllByStickerPackageId(packageId);
         return new ResponseEntity<>(stickers,HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> addStickerToPackage(Long packageId, Long stickerId) {
+        Sticker existsticker = stickerRepository.getById(stickerId);
+        Sticker newSticker = new Sticker();
+        StickerPackage stickerPackage = stickerPackageRepository.getById(packageId);
+        Users user = userRepository.getById(stickerPackage.getUserId());
+        newSticker.setStickerName(existsticker.getStickerName());
+        newSticker.setStickerPackageId(packageId);
+        newSticker.setUserId(user.getId());
+        newSticker.setImageUrl(existsticker.getImageUrl());
+        newSticker.setEnabled(true);
+        newSticker.setUserName(existsticker.getUserName());
+        stickerRepository.save(newSticker);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override

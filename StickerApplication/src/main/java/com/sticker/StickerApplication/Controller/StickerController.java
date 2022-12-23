@@ -1,5 +1,6 @@
 package com.sticker.StickerApplication.Controller;
 
+import com.sticker.StickerApplication.Entity.Request.StickerRequest;
 import com.sticker.StickerApplication.Entity.Sticker;
 import com.sticker.StickerApplication.Service.IService.StickerService;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,7 @@ public class StickerController {
     }
 
     @PostMapping(value = "/addSticker/{packageId}")
-    public ResponseEntity<?> addSticker(@RequestBody Sticker sticker,
+    public ResponseEntity<?> addSticker(@RequestBody StickerRequest sticker,
                                         @PathVariable Long packageId){
         return stickerService.addSticker(packageId, sticker);
     }
@@ -58,5 +59,11 @@ public class StickerController {
     public ResponseEntity<?> deleteSticker(@PathVariable Long packageId,
                                            @PathVariable Long stickerId){
         return stickerService.deleteSticker(packageId, stickerId);
+    }
+
+    @PostMapping(value = "/addStickerToPackage/{packageId}/{stickerId}")
+    public ResponseEntity<?> addStickerToPackage(@PathVariable Long packageId,
+                                                 @PathVariable Long stickerId){
+        return stickerService.addStickerToPackage(packageId,stickerId);
     }
 }

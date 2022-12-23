@@ -13,4 +13,5 @@ public interface StickerPackageRepository extends JpaRepository<StickerPackage,L
 
     List<StickerPackage> findAllByUserId(Long userId);
 
+    StickerPackage getById(Long packageId);
 }
